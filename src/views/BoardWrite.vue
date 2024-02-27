@@ -54,7 +54,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import axios from "axios"
+import axios from "../axios"
 import { getBoardList } from './utils'
 
 const route = useRoute();
@@ -74,7 +74,7 @@ onMounted(async () => {
 //로그인한 사람과 수정하려는 사람이 동일한지 체크 필요
     if (route.query.id !== undefined && route.query.id !== "") { 
         edit.value = true
-        const response = await axios.get("http://localhost:3000/detail", {
+        const response = await axios.get("/detail", {
             params: { id: route.query.id }
         })
 
@@ -89,7 +89,7 @@ onMounted(async () => {
 
 const submit = async () => {
     try {
-        const response = await axios.post("http://localhost:3000/post", {
+        const response = await axios.post("/post", {
             board_name: boardName.value,
             title: title.value,
             content: content.value,
@@ -109,7 +109,7 @@ const submit = async () => {
 
 const update = async () => { 
     try { 
-        const response = await axios.post("http://localhost:3000/postUpdate", {
+        const response = await axios.post("/postUpdate", {
             board_name: boardName.value,
             title: title.value,
             content: content.value,
@@ -131,7 +131,7 @@ const update = async () => {
 
 const deletePost = async () => { 
     try { 
-        const response = await axios.post("http://localhost:3000/postDelete", {
+        const response = await axios.post("/postDelete", {
             id: route.query.id,
         })
 

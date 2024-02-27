@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+import axios from '../axios';
 import { ref } from 'vue'
 
 const id = ref(null)
@@ -70,7 +70,7 @@ const submit = async () => {
             alert("아이디와 비밀번호는 필수 요소입니다.")
             return
         }
-        const response = await axios.post("http://localhost:3000/signIn", {
+        const response = await axios.post("/signIn", {
             name: id.value,
             password: pw.value,
             email: email.value,

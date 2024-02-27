@@ -41,7 +41,7 @@
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useLoginStore } from '../stores/counter.js'
-import axios from 'axios';
+import axios from '../axios';
 
 const loginStore = useLoginStore()
 const router = useRouter()
@@ -57,7 +57,7 @@ const submit = async () => {
             return
         }
 
-        const response = await axios.post("http://localhost:3000/login", {
+        const response = await axios.post("/login", {
             name: id.value,
             password: pw.value,
         });

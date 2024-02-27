@@ -65,8 +65,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router';
-import axios from 'axios';
+import axios from '../axios';
 import { useLoginStore } from '../stores/counter.js'
+
+const backEndUrl = import.meta.env.VITE_APP_API_URL
 
 const loginStore = useLoginStore()
 const token = localStorage.getItem('token')
@@ -76,11 +78,12 @@ const totalPages = ref(0)
 
 onMounted(async () => { 
     await myPost()
+    console.log(backEndUrl)
 })
 //내글목록에서는 삭제한글도보이게, 마이페이지 접속 후 내 글 목록은 클릭하면 보이도록
 const myPost = async ({ currentPage = 0 } = {}) => { 
     try { 
-        const response = await axios.get("http://localhost:3000/getMyPost", {
+        const response = await axios.get('/getMyPost', {
             headers: {
 				"authentification": token
 			},
@@ -100,10 +103,14 @@ const myPost = async ({ currentPage = 0 } = {}) => {
 
 const update = async () => { 
     try {
-        const response = await axios.post("http://localhost:3000/updateUserInfo", {
+        const response = await axios.post("/updateUserInfo", {
             name: loginStore.name,
             email: loginStore.email,
             nickname: loginStore.nickname,
+        }, {
+            headers: {
+                "authentification": token
+            },
         });
         if (response.status === 200) { 
             alert(`${response.data.message}`)

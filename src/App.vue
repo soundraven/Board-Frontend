@@ -11,7 +11,6 @@ import axios from 'axios'
 import { useLoginStore } from './stores/counter';
 import router from './router';
 
-
 const loginStore = useLoginStore()
 const token = localStorage.getItem('token')
 
@@ -33,6 +32,8 @@ onMounted(async () => {
 		}
 	}
 })
+
+
 
 </script>
 

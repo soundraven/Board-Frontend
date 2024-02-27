@@ -135,7 +135,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import axios from "axios";
+import axios from "../axios";
 import { useLoginStore } from '../stores/counter.js'
 import { DateTime } from 'luxon';
 
@@ -153,7 +153,7 @@ const cmtEditId = ref(0)
 const commentContent = ref("")
 
 const getDetail = async () => { 
-    const response = await axios.get("http://localhost:3000/detail", {
+    const response = await axios.get("/detail", {
         params: {
             id: `${id.value}`
         }
@@ -191,7 +191,7 @@ const liked = async (status) => {
     }
 
     try {
-        const response = await axios.post("http://localhost:3000/liked", {
+        const response = await axios.post("/liked", {
             postId: id.value,
             userId: loginStore.id,
             likeDislike: status === 'like' ? true : false,
@@ -219,7 +219,7 @@ const liked = async (status) => {
 
 const deletePost = async () => { 
     try { 
-        const response = await axios.post("http://localhost:3000/postDelete", {
+        const response = await axios.post("/postDelete", {
             id: id.value,
         })
 
@@ -237,7 +237,7 @@ const deletePost = async () => {
 
 const submitCmt = async () => { 
     try { 
-        const response = await axios.post("http://localhost:3000/submitCmt", {
+        const response = await axios.post("/submitCmt", {
             postId: id.value,
             registeredBy: loginStore.id,
             cmt: commentContent.value,
@@ -259,7 +259,7 @@ const submitCmt = async () => {
 
 const deleteCmt = async (cmtId) => { 
     try { 
-        const response = await axios.post("http://localhost:3000/deleteCmt", {
+        const response = await axios.post("/deleteCmt", {
             cmtId: cmtId,
         })
 
@@ -277,7 +277,7 @@ const deleteCmt = async (cmtId) => {
 
 const updateCmt = async (cmtId, editedCmt) => { 
     try { 
-        const response = await axios.post("http://localhost:3000/updateCmt", {
+        const response = await axios.post("/updateCmt", {
             cmtId: cmtId,
             editedCmt: editedCmt
         })

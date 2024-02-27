@@ -68,9 +68,9 @@
 <script setup>
 
 // asyncData 처럼 mounted 전에 데이터를 불러와서 처음에 페이지에 도달했을 때부터 글 목록이 보이게
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, } from 'vue'
 import { RouterLink } from 'vue-router'
-import axios from "axios"
+import axios from "../axios"
 import { getBoardList } from './utils';
 import SearchBar from '../components/SearchBar.vue'
 import PagenationBar from '../components/PagenationBar.vue'
@@ -139,7 +139,7 @@ const popStateHandler = (e) => {
 
 const viewPost = async (saveState = true) => {
     // queryToData()
-    const response = await axios.get("http://localhost:3000/boards", {
+    const response = await axios.get("/boards", {
         params: {
             board: `${boardId.value}`,
             page: `${currentPageComponent.value.currentPage}`,
