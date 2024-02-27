@@ -54,7 +54,7 @@
                 :key="'page_' + index"
                 :class="[$style.pageBtn, { active: page === currentPage }]"
                 @click.prevent="myPost({ currentPage: page - 1})"
-                >
+            >
                 {{ page }}
             </a>
 
