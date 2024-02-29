@@ -4,7 +4,7 @@
             <span 
                 v-for="(list, index) in boardList"
                 :key="'list_' + index"
-                :class="$style.boardName"
+                :class="[$style.boardName, getActiveClass(list.board_id)]"
                 @click="() => { 
                     boardId = list.board_id 
                     keyword = ''
@@ -72,14 +72,13 @@
                 </span>
             </div>
         </div>
-    
     </div>
 </template>
 
 <script setup>
 
 // asyncData 처럼 mounted 전에 데이터를 불러와서 처음에 페이지에 도달했을 때부터 글 목록이 보이게
-import { ref, onMounted, onBeforeUnmount, } from 'vue'
+import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useLoginStore } from '../stores/counter';
 import { getBoardList } from './utils';
@@ -91,6 +90,7 @@ import PagenationBar from '../components/PagenationBar.vue'
 const route = useRoute();
 const router = useRouter()
 const loginStore = useLoginStore()
+const $style = useCssModule()
 
 function pushWithQuery() { 
     viewPost()
@@ -170,6 +170,11 @@ const viewPost = async (saveState = true) => {
     });
 }
 
+const getActiveClass = (board) => { 
+    console.log(board)
+    return board === boardId.value ? $style.active : ''
+}
+
 const doSearch = (searchKeyword, opt) => {
     currentPageComponent.value.resetPage()
     keyword.value = searchKeyword
@@ -209,13 +214,20 @@ const resetCurrentPage = () => {
             width: 100px;
             height: 40px;
 
+            color: grey;
             font-size: 18px;
-            font-weight: bold;
             text-align: center;
             line-height: 40px;
 
             z-index: 1;
             position: relative;
+
+            &.active {
+                color: black;
+                font-weight: bold;
+                border: 1px solid #c6c6c6;
+                border-bottom: 1px solid white;
+            }
         }
     }
     .postTable{
@@ -265,17 +277,22 @@ const resetCurrentPage = () => {
 
         .postNumber {
             width: 120px;
+
+            .itemsPerPage {
+                border: 1px solid #c6c6c6;
+            }
         }
 
         .writeBox {
             width: 120px;
-            padding-right: 0px;
-            padding-left: auto;
+            // padding-right: 0px;
+            // padding-left: auto;
         }
         .writeBtn {
             width: 60px;
             float: right;
-            border: 1px solid blue;
+            text-align: center;
+            border: 1px solid #c6c6c6;
 
             &:hover {
                 cursor: pointer;
