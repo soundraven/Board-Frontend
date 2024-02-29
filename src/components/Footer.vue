@@ -21,8 +21,7 @@ import { RouterLink, RouterView } from 'vue-router'
 	text-align: center;
 	line-height: 52px;
 
-	border-top: 1px solid red;
-	margin-top: 20px;
+	border-top: 1px solid #c6c6c6;
 
 	a {
 		text-decoration: none;

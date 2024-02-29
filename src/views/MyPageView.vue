@@ -1,4 +1,5 @@
 <template>
+    <Header />
     <h1>마이페이지</h1>
     <div>
         <h1>계정 정보</h1>
@@ -67,6 +68,8 @@ import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router';
 import axios from '../axios';
 import { useLoginStore } from '../stores/counter.js'
+import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
 
 const backEndUrl = import.meta.env.VITE_APP_API_URL
 

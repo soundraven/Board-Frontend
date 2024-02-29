@@ -50,8 +50,6 @@ const emit = defineEmits(['searchPost'])
     display: flex;
     justify-content: center;
 
-    margin-top: 10px;
-
     .searchBtn {
         border: 1px solid blue;
         margin-left: 5px;
