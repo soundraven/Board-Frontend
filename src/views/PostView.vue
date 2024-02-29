@@ -306,33 +306,50 @@ const checkLogin = () => {
 
 <style lang="scss" module>
 .index {
-    width: 1000px;
-    border: 1px solid black;
-    margin-inline: auto;
-    // display: flex;
+    width: 1100px;
+    margin-block: 5px;
+
     .titleRow {
+        height: 40px;
+
         display: flex;
         justify-content: space-between;
-        border: 1px solid green;
-        padding: 5px 10px;
+
+        line-height: 40px;
+
+        border-top: 2px solid #c6c6c6;
+
+        margin-top: 10px;
+
         .titleBox {
             display: flex;
+            align-items: center;
 
             .boardName {
-                border: 1px solid blue;
+                height: 20px;
+                font-size: 14px;
+                line-height: 20px;
+                border: 1px solid #c6c6c6;
             }
 
             .title {
-                border: 1px solid red;
+                font-weight: bold;
                 margin-inline: 5px;
             }
         }
 
         .editBox {
             display: flex;
+            align-items: center;
 
             .editPost {
-                border: 1px solid blue;
+                height: 20px;
+
+                font-size: 14px;
+                line-height: 20px;
+
+                border: 1px solid #c6c6c6;
+
                 margin-left: 5px;
 
                 &:hover {
@@ -343,11 +360,16 @@ const checkLogin = () => {
             
     }
     .infoRow {
+        height: 30px;
+
         display: flex;
         justify-content: space-between;
-        padding: 5px 10px;
-        border: 1px solid orange;
-        
+        align-items: center;
+
+        font-size: 14px;
+
+        border-block: 1px solid #c6c6c6;
+
         .postInfo {
             display: flex;
 
@@ -358,24 +380,28 @@ const checkLogin = () => {
     }
 
     .content {
-        padding: 10px;
         min-height: 360px;
-        border: 1px solid blue;
+        border-top: 1px solid #c6c6c6;
+        padding: 10px;
     }
 
     .btnBox {
         display: flex;
         flex-direction: row;
         justify-content: center;
+
         .likeBtn, .dislikeBtn {
             width: 80px;
             height: 60px;
 
-            border: 1px solid red;
+            text-align: center;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
+
+            border: 1px solid #c6c6c6;
+
             margin: 5px;
 
             &:hover {
@@ -385,7 +411,7 @@ const checkLogin = () => {
     }
 
     .cmtsCnt {
-        border-bottom: 2px solid blue;
+        border-bottom: 2px solid #c6c6c6;
         padding: 5px 10px;
     }
     
@@ -397,7 +423,7 @@ const checkLogin = () => {
             display: flex;
             justify-content: space-around;
             padding: 10px;
-            border-bottom: 1px solid grey;
+            border-bottom: 1px solid #c6c6c6;
 
             .cmtRegisteredBy {
                 flex-basis: 15%;
@@ -417,7 +443,7 @@ const checkLogin = () => {
                 width: 36px;
                 height: 20px;
                 font-size: 13px;
-                border: 1px solid red;
+                border: 1px solid #c6c6c6;
                 margin: 0 10px 10px 5px;
 
                 text-align: center;
@@ -437,7 +463,7 @@ const checkLogin = () => {
                 .cmtDeleteBtn {
                     width: 32px;
 
-                    border: 1px solid red;
+                    border: 1px solid #c6c6c6;
                     text-align: center;
                     font-size: 13px;
 
@@ -461,7 +487,7 @@ const checkLogin = () => {
                 width: 140px;
                 height: 30px;
                 flex-basis: 15%;
-                border: 1px solid green;
+                border: 1px solid #c6c6c6;
                 padding-left: 10px;
                 margin: 10px 0px 0px 10px;
             }
@@ -479,7 +505,7 @@ const checkLogin = () => {
             justify-content: right;
             .submitCmtBtn {
                 width: 120px;
-                border: 1px solid red;
+                border: 1px solid #c6c6c6;
                 margin: 0 10px 10px 0;
                 padding: 10px;
                 text-align: center;

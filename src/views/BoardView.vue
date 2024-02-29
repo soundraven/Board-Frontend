@@ -137,6 +137,7 @@ const viewPost = async (saveState = true) => {
             itemsPerPage: `${itemsPerPage.value}`
         }
     })
+    //예외처리, Response가 값이 이상하다면
 
     if (saveState) {
         let url = "boardView?currentPage=" + currentPageComponent.value.currentPage + "&board=" + boardId.value
@@ -232,9 +233,12 @@ const resetCurrentPage = () => {
     }
     .postTable{
         width: 1100px;
+
         border-block: 1px solid #c6c6c6;
         border-collapse: collapse;
+
         margin-inline: auto;
+
         position: relative;
         z-index: 0;
 
