@@ -126,14 +126,14 @@ defineExpose({ currentPage, resetPage })
         text-align: center;
         vertical-align: middle;
 
-        border: 1px solid red;
+        border: 1px solid #c6c6c6;
 
         &:hover {
             cursor: pointer;
         }
 
         &.active {
-            background-color: aqua;
+            background-color: darkgray;
         }
     }
 }

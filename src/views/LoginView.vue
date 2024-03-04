@@ -1,47 +1,51 @@
 <template>
-    <div :class="$style.loginBox">
-        <div :class="$style.idPwWrap">
-            <div :class="$style.idInput">
-                <!-- input에는 require속성이라는 것이 있다 -->
-            <input 
-                v-model="id"
-                type="id"
-                placeholder="아이디 입력"
+    <div :class="$style.index">
+        <div :class="$style.loginBox">
+            <div :class="$style.idPwWrap">
+                <div :class="$style.idInput">
+                <input 
+                    v-model="id"
+                    type="id"
+                    placeholder="아이디 입력"
+                    required
+                >
+                </div>
+                <div :class="$style.pwInput">
+                <input 
+                    v-model="pw"
+                    type="password"
+                    placeholder="비밀번호 입력"
+                    required
+                />
+                </div>
+            </div>
+            <div 
+                @click="submit"
+                :class="$style.loginButton"
             >
-            </div>
-            <div :class="$style.pwInput">
-            <input 
-                v-model="pw"
-                type="password"
-                placeholder="비밀번호 입력"
-            />
+                로그인
             </div>
         </div>
-        <div 
-            @click="submit"
-            :class="$style.loginButton"
-        >
-            로그인
+        <div :class="$style.navigator">
+            <div :class="$style.navBox">
+                <a href="#">비밀번호 찾기</a>
+            </div>
+            <div :class="$style.navBox">
+                <a href="#">아이디 찾기</a>
+            </div>
+            <div :class="$style.navBox">
+                <router-link to="signView">회원가입</router-link>
+            </div>
         </div>
     </div>
-    <div :class="$style.navigator">
-        <div :class="$style.navBox">
-            <a href="#">비밀번호 찾기</a>
-        </div>
-        <div :class="$style.navBox">
-            <a href="#">아이디 찾기</a>
-        </div>
-        <div :class="$style.navBox">
-            <router-link to="SignView">회원가입</router-link>
-        </div>
-    </div>
+    
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useLoginStore } from '../stores/counter.js'
-import axios from 'axios';
+import axios from '../axios';
 
 const loginStore = useLoginStore()
 const router = useRouter()
@@ -51,15 +55,14 @@ const pw = ref(null)
 
 const submit = async () => { 
     try {
-        //(로그인)유효성검사 알아보기
         if (!id.value?.trim() || !pw.value?.trim()) {
             alert("아이디와 비밀번호는 필수 요소입니다.")
             return
         }
 
-        const response = await axios.post("http://localhost:3000/login", {
-            name: id.value,
-            password: pw.value,
+        const response = await axios.post("/login", {
+            id: id.value,
+            pw: pw.value,
         });
         
         if (response.status === 200) {
@@ -76,101 +79,101 @@ const submit = async () => {
 </script>
 
 <style lang="scss" module>
+.index {
+    .loginBox {
+        width: 500px;
+        height: 300px;
 
-.loginBox {
-    width: 460px;
-    height: 240px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+        border: 1px solid #c6c6c6;
+        border-radius: 6px;
+        box-shadow: 0 5px 8px 0 rgba(68,68,68,.04);
 
-    border: 1px solid #c6c6c6;
-    border-radius: 6px;
-    box-shadow: 0 5px 8px 0 rgba(68,68,68,.04);
+        padding: 35px 0px;
 
-    margin: 0 auto;
-    padding: 35px 0px;
+        .idPwWrap {
 
-    .idPwWrap {
-
-        .idInput {
-            border-radius: 6px 6px 0 0;
-            position: relative;
-            z-index: 1;
+            .idInput {
+                border-radius: 6px 6px 0 0;
+                position: relative;
+                z-index: 1;
             }
 
-        .pwInput {
-            border-radius: 0 0 6px 6px;
-            box-shadow: 0 2px 6px 0 rgba(68,68,68,.08);
+            .pwInput {
+                border-radius: 0 0 6px 6px;
+                box-shadow: 0 2px 6px 0 rgba(68,68,68,.08);
 
-            position: relative;
-            z-index: 1;
+                position: relative;
+                z-index: 1;
+                
+                margin-top: -1px;
+            }
+            .idInput, .pwInput {
+                width: 402px;
+                height: 48px;
+
+                display: flex;
+                align-items: center;
+
+                border: 1px solid #dadada;
+
+                padding: 14px 17px 13px;
+
+                &:focus-within {
+                    border: 1px solid #1a70dc;
+                    z-index: 2;
+                }
             
-            margin-top: -1px;
-        }
-        .idInput, .pwInput {
-            width: 402px;
-            height: 48px;
+                > input {
+                    border: none;
 
-            display: flex;
-            align-items: center;
-
-            border: 1px solid #dadada;
-
-            padding: 14px 17px 13px;
-
-            &:focus-within {
-                border: 1px solid #1a70dc;
-                z-index: 2;
-            }
-        
-            > input {
-                border: none;
-
-                &:focus {
-                    outline: none;
+                    &:focus {
+                        outline: none;
+                    }
                 }
             }
         }
+
+        .loginButton {
+            width: 402px;
+            height: 48px;
+
+            background-color: #1a70dc;
+
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 48px;
+
+            border-radius: 6px;
+            box-shadow: 0 2px 6px 0 rgba(68,68,68,.08); 
+        }
     }
 
-    .loginButton {
+    .navigator {
         width: 402px;
-        height: 48px;
+        display: flex;
+        justify-content: center;
+        margin: 20px auto;
+        
+        .navBox {
+            border-right: 1px solid #c6c6c6;
+            padding: 0 10px 0 10px;
 
-        background-color: #1a70dc;
+            a {
+                text-decoration: none;
+                color: #888;
+            }
 
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        line-height: 48px;
-
-        border-radius: 6px;
-        box-shadow: 0 2px 6px 0 rgba(68,68,68,.08); 
-    }
-}
-
-.navigator {
-    width: 402px;
-    display: flex;
-    justify-content: center;
-    margin: 20px auto;
-    
-    .navBox {
-        border-right: 1px solid #c6c6c6;
-        padding: 0 10px 0 10px;
-
-        a {
-            text-decoration: none;
-            color: #888;
+            &:last-child {
+                border-right: none;
+            }
         }
-
-        &:last-child {
-            border-right: none;
-        }
-    }
+    }  
 }
 </style>

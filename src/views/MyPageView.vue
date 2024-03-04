@@ -1,7 +1,6 @@
 <template>
-    <h1>마이페이지</h1>
-    <div>
-        <h1>계정 정보</h1>
+    <div :class="$style.index">
+        <div>계정 정보</div>
         <div>로그인 아이디: {{ loginStore.name }}</div>
         <div>이메일: 
             <input 
@@ -10,8 +9,6 @@
                 placeholder="이메일을 입력해주세요.">
         </div>
     </div>
-    <br>
-    <br>
     <div>
         <h1>프로필 정보</h1>
         <div>닉네임: 
@@ -21,10 +18,7 @@
                 placeholder="닉네임을 입력해주세요.">
         </div>
     </div>
-    <br>
-    <br>
     <button @click="update">수정 완료</button>
-
     <div>
         <h1>내 글 목록</h1>
         <table>
@@ -48,7 +42,6 @@
                 <td>{{ new Date(post.registered_date * 1000).toLocaleString() }}</td>
             </tr>
         </table>
-
         <div :class="$style.pagenation">
             <a v-for="(page, index) in totalPages"
                 :key="'page_' + index"
@@ -57,7 +50,6 @@
             >
                 {{ page }}
             </a>
-
         </div>
     </div>
 </template>
@@ -65,8 +57,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router';
-import axios from 'axios';
+import axios from '../axios';
 import { useLoginStore } from '../stores/counter.js'
+
+const backEndUrl = import.meta.env.VITE_APP_API_URL
 
 const loginStore = useLoginStore()
 const token = localStorage.getItem('token')
@@ -76,11 +70,12 @@ const totalPages = ref(0)
 
 onMounted(async () => { 
     await myPost()
+    console.log(backEndUrl)
 })
 //내글목록에서는 삭제한글도보이게, 마이페이지 접속 후 내 글 목록은 클릭하면 보이도록
 const myPost = async ({ currentPage = 0 } = {}) => { 
     try { 
-        const response = await axios.get("http://localhost:3000/getMyPost", {
+        const response = await axios.get('/getMyPost', {
             headers: {
 				"authentification": token
 			},
@@ -100,10 +95,14 @@ const myPost = async ({ currentPage = 0 } = {}) => {
 
 const update = async () => { 
     try {
-        const response = await axios.post("http://localhost:3000/updateUserInfo", {
+        const response = await axios.post("/updateUserInfo", {
             name: loginStore.name,
             email: loginStore.email,
             nickname: loginStore.nickname,
+        }, {
+            headers: {
+                "authentification": token
+            },
         });
         if (response.status === 200) { 
             alert(`${response.data.message}`)
@@ -115,6 +114,10 @@ const update = async () => {
 </script>
 
 <style lang="scss" module>
+.index {
+    display: flex;
+    flex-direction: column;
+}
 .pagenation {
         display: flex;
         justify-content: center;

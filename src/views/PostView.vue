@@ -16,7 +16,7 @@
                 >
                     수정
                 </router-link>
-                <div 
+                <div
                     :class="$style.editPost" 
                     @click="deletePost"
                 >
@@ -71,7 +71,7 @@
                             :class="$style.cmtEditArea"
                             v-model="cmt.content"
                         ></textarea>
-                        <div 
+                        <div
                             :class="$style.submitCmtBtn"
                             @click="updateCmt(cmt.id, cmt.content)"
                         >
@@ -79,12 +79,11 @@
                         </div>
                     </div>
                 </div>
-                
                 <div :class="$style.cmtRight">
                     <div :class="$style.cmtFormattedDate">
                         {{ cmt.formattedDate }}
                         <div>
-                            <span 
+                            <span
                                 :class="$style.cmtDeleteBtn"
                                 v-if="loginStore.name === cmt.registered_by"
                                 @click="cmtEdit = true, cmtEditId = cmt.id"
@@ -99,13 +98,8 @@
                                 삭제
                             </span>
                         </div>
-                        
                     </div>
-                    <span :class="$style.cmtDelete">
-
-                    </span>
                 </div>
-                
             </div>
         </div>
         <div :class="$style.cmtWriteBox">
@@ -135,13 +129,14 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import axios from "axios";
+import axios from "../axios";
 import { useLoginStore } from '../stores/counter.js'
 import { DateTime } from 'luxon';
 
 const loginStore = useLoginStore()
 const route = useRoute();
 const router = useRouter();
+const token = localStorage.getItem('token')
 const id = ref('')
 
 const detail = ref([])
@@ -153,7 +148,7 @@ const cmtEditId = ref(0)
 const commentContent = ref("")
 
 const getDetail = async () => { 
-    const response = await axios.get("http://localhost:3000/detail", {
+    const response = await axios.get("/detail", {
         params: {
             id: `${id.value}`
         }
@@ -174,7 +169,7 @@ const getDetail = async () => {
                 ...data,
                 formattedDate,
             };
-        });
+    });
 
     totalCommentsCount.value = response.data.totalCommentsCount
 }
@@ -191,24 +186,19 @@ const liked = async (status) => {
     }
 
     try {
-        const response = await axios.post("http://localhost:3000/liked", {
+        const response = await axios.post("/liked", {
             postId: id.value,
             userId: loginStore.id,
             likeDislike: status === 'like' ? true : false,
         })
-//likeup likedn 이런걸 굳이 문자로 하지 말고 타입으로 나눠서 관리?
         if (response?.data === 'likeUp') {
             detail.value.like_count++
-            // alert("추천되었습니다.")
         } else if (response?.data === 'likeDn') {
             detail.value.like_count--
-            // alert("추천이 취소되었습니다.")
         } else if (response?.data === 'dislikeUp') {
             detail.value.dislike_count++
-            // alert("비추천되었습니다.")
         } else if (response?.data === 'dislikeDn') {
             detail.value.dislike_count--
-            // alert("비추천이 취소되었습니다.")
         } else { 
             alert("추천/비추천 값에 문제가 생겼습니다.")
         }
@@ -219,7 +209,7 @@ const liked = async (status) => {
 
 const deletePost = async () => { 
     try { 
-        const response = await axios.post("http://localhost:3000/postDelete", {
+        const response = await axios.post("/postDelete", {
             id: id.value,
         })
 
@@ -237,7 +227,7 @@ const deletePost = async () => {
 
 const submitCmt = async () => { 
     try { 
-        const response = await axios.post("http://localhost:3000/submitCmt", {
+        const response = await axios.post("/submitCmt", {
             postId: id.value,
             registeredBy: loginStore.id,
             cmt: commentContent.value,
@@ -259,8 +249,13 @@ const submitCmt = async () => {
 
 const deleteCmt = async (cmtId) => { 
     try { 
-        const response = await axios.post("http://localhost:3000/deleteCmt", {
+        const response = await axios.post("/deleteCmt", {
             cmtId: cmtId,
+            registeredBy: loginStore.id,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
         if (response.status === 200) {
@@ -277,9 +272,14 @@ const deleteCmt = async (cmtId) => {
 
 const updateCmt = async (cmtId, editedCmt) => { 
     try { 
-        const response = await axios.post("http://localhost:3000/updateCmt", {
+        const response = await axios.post("/updateCmt", {
             cmtId: cmtId,
-            editedCmt: editedCmt
+            editedCmt: editedCmt,
+            registeredBy: loginStore.id,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
         if (response.status === 200) {
@@ -306,33 +306,51 @@ const checkLogin = () => {
 
 <style lang="scss" module>
 .index {
-    width: 1000px;
-    border: 1px solid black;
-    margin-inline: auto;
-    // display: flex;
+    width: 1100px;
+    margin-block: 5px;
+
     .titleRow {
+        height: 40px;
+
         display: flex;
         justify-content: space-between;
-        border: 1px solid green;
-        padding: 5px 10px;
+
+        line-height: 40px;
+
+        border-top: 2px solid #c6c6c6;
+
+        margin-top: 10px;
+        padding-inline: 5px;
+
         .titleBox {
             display: flex;
+            align-items: center;
 
             .boardName {
-                border: 1px solid blue;
+                height: 20px;
+                font-size: 14px;
+                line-height: 20px;
+                border: 1px solid #c6c6c6;
             }
 
             .title {
-                border: 1px solid red;
+                font-weight: bold;
                 margin-inline: 5px;
             }
         }
 
         .editBox {
             display: flex;
+            align-items: center;
 
             .editPost {
-                border: 1px solid blue;
+                height: 20px;
+
+                font-size: 14px;
+                line-height: 20px;
+
+                border: 1px solid #c6c6c6;
+
                 margin-left: 5px;
 
                 &:hover {
@@ -342,12 +360,20 @@ const checkLogin = () => {
         }
             
     }
+
     .infoRow {
+        height: 30px;
+
         display: flex;
         justify-content: space-between;
-        padding: 5px 10px;
-        border: 1px solid orange;
-        
+        align-items: center;
+
+        font-size: 14px;
+
+        border-block: 1px solid #c6c6c6;
+
+        padding-inline: 5px;
+
         .postInfo {
             display: flex;
 
@@ -358,24 +384,28 @@ const checkLogin = () => {
     }
 
     .content {
-        padding: 10px;
         min-height: 360px;
-        border: 1px solid blue;
+        border-top: 1px solid #c6c6c6;
+        padding: 10px;
     }
 
     .btnBox {
         display: flex;
         flex-direction: row;
         justify-content: center;
+
         .likeBtn, .dislikeBtn {
             width: 80px;
             height: 60px;
 
-            border: 1px solid red;
+            text-align: center;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
+
+            border: 1px solid #c6c6c6;
+
             margin: 5px;
 
             &:hover {
@@ -385,10 +415,10 @@ const checkLogin = () => {
     }
 
     .cmtsCnt {
-        border-bottom: 2px solid blue;
+        border-bottom: 2px solid #c6c6c6;
         padding: 5px 10px;
     }
-    
+
     .cmtBox {
         display: flex;
         flex-direction: column;
@@ -396,8 +426,8 @@ const checkLogin = () => {
         .cmt {
             display: flex;
             justify-content: space-around;
-            padding: 10px;
-            border-bottom: 1px solid grey;
+            border-bottom: 1px solid #c6c6c6;
+            padding-block: 10px;
 
             .cmtRegisteredBy {
                 flex-basis: 15%;
@@ -414,18 +444,18 @@ const checkLogin = () => {
                     }
 
                     .submitCmtBtn {
-                width: 36px;
-                height: 20px;
-                font-size: 13px;
-                border: 1px solid red;
-                margin: 0 10px 10px 5px;
+                        width: 36px;
+                        height: 20px;
+                        font-size: 13px;
+                        border: 1px solid #c6c6c6;
+                        margin: 0 10px 10px 5px;
 
-                text-align: center;
+                        text-align: center;
 
-                &:hover {
-                    cursor: pointer;
-                }
-            }
+                        &:hover {
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
 
@@ -437,7 +467,7 @@ const checkLogin = () => {
                 .cmtDeleteBtn {
                     width: 32px;
 
-                    border: 1px solid red;
+                    border: 1px solid #c6c6c6;
                     text-align: center;
                     font-size: 13px;
 
@@ -461,7 +491,7 @@ const checkLogin = () => {
                 width: 140px;
                 height: 30px;
                 flex-basis: 15%;
-                border: 1px solid green;
+                border: 1px solid #c6c6c6;
                 padding-left: 10px;
                 margin: 10px 0px 0px 10px;
             }
@@ -479,7 +509,7 @@ const checkLogin = () => {
             justify-content: right;
             .submitCmtBtn {
                 width: 120px;
-                border: 1px solid red;
+                border: 1px solid #c6c6c6;
                 margin: 0 10px 10px 0;
                 padding: 10px;
                 text-align: center;

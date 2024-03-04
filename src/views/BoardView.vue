@@ -1,11 +1,10 @@
 <template>
-    <Header />
     <div :class="$style.content">
         <div :class="$style.boardCategory">
             <span 
                 v-for="(list, index) in boardList"
                 :key="'list_' + index"
-                :class="$style.boardName"
+                :class="[$style.boardName, getActiveClass(list.board_id)]"
                 @click="() => { 
                     boardId = list.board_id 
                     keyword = ''
@@ -38,69 +37,71 @@
                 <td>{{ data.formattedDate }}</td>
             </tr>
         </table>
-    <PagenationBar 
-        ref = "currentPageComponent"
-        :totalPages="totalPages"
-        @movePage="pushWithQuery"
-    />
-    <SearchBar 
-        ref = "clearSearchBar"
-        @searchPost="doSearch"
-    />
-
-    <select 
-        :class="$style.itemsPerPage"
-        v-model="itemsPerPage" 
-        @change="viewPost"
-    >
-            <option
-                v-for="(number, index) in itemsPerPageList" 
-                :key="'list_' + index"
-                :value=number
-            >
-                {{ number }}
-            </option>
-        </select>
+        <PagenationBar 
+            ref = "currentPageComponent"
+            :totalPages="totalPages"
+            @movePage="pushWithQuery"
+        />
+        <div :class="$style.utility">
+            <div :class="$style.postNumber">
+                게시글 수:
+                <select 
+                    :class="$style.itemsPerPage"
+                    v-model="itemsPerPage" 
+                    @change="viewPost"
+                >
+                    <option
+                        v-for="(number, index) in itemsPerPageList" 
+                        :key="'list_' + index"
+                        :value=number
+                    >
+                        {{ number }}
+                    </option>
+                </select>
+            </div>
+            <SearchBar 
+                ref = "clearSearchBar"
+                @searchPost="doSearch"
+            />
+            <div :class="$style.writeBox">
+                <span 
+                    :class="[$style.writeBtn, {[$style.hide]: !loginStore.loginStatus}]"
+                    @click="router.push('/boardWrite')"
+                >
+                    글 작성
+                </span>
+            </div>
+        </div>
     </div>
-
 </template>
 
 <script setup>
 
 // asyncData 처럼 mounted 전에 데이터를 불러와서 처음에 페이지에 도달했을 때부터 글 목록이 보이게
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { RouterLink } from 'vue-router'
-import axios from "axios"
+import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { useLoginStore } from '../stores/counter';
 import { getBoardList } from './utils';
+import axios from "../axios"
+import { DateTime } from 'luxon';
 import SearchBar from '../components/SearchBar.vue'
 import PagenationBar from '../components/PagenationBar.vue'
-import { DateTime } from 'luxon';
-import { useRoute } from 'vue-router' // useRouter, 
-import Header from '../components/Header.vue'
-import Footer from '../components/Footer.vue'
 
 const route = useRoute();
-// const router = useRouter()
+const router = useRouter()
+const loginStore = useLoginStore()
+const $style = useCssModule()
 
 function pushWithQuery() { 
-
     viewPost()
-    // router.push({
-    //     name: 'boardView',
-    //     query: {
-    //         boardName: boardId.value,
-    //         currentPage: parseInt(currentPageComponent.value.currentPage),
-    //         searchKeyword: keyword.value,
-    //     }
-    // })
 }
 
 const posts = ref([])
 const totalPages = ref(0)
 const currentPageComponent = ref(null)
 
-const itemsPerPage = ref(20)
-const itemsPerPageList = [20, 30, 50]
+const itemsPerPage = ref(30)
+const itemsPerPageList = [30, 40, 50]
 
 const boardList = ref([])
 const boardId = ref('free')
@@ -109,21 +110,11 @@ const keyword = ref('')
 const searchOpt = ref('제목')
 const clearSearchBar = ref(null)
 
-// const queryToData = () => { 
-//     boardId.value = route.query.boardName || "free"
-//     // currentPageComponent.value.currentPage = parseInt(route.query.currentPage) || 0
-//     keyword.value = route.query.searchKeyword || ''
-// }
-
 onMounted(async () => { 
     currentPageComponent.value.currentPage = parseInt(route.query.currentPage) || 0
     boardList.value = await getBoardList()
     viewPost()
-
     window.addEventListener("popstate", popStateHandler)
-    // window.addEventListener("click", (e) => {
-    //     console.log(e)  
-    // })
 })
 
 onBeforeUnmount(() => {
@@ -131,15 +122,13 @@ onBeforeUnmount(() => {
 })
 
 const popStateHandler = (e) => {
-    console.log(e)
     currentPageComponent.value.currentPage = e.state.page
     boardId.value = e.state.boardId
     viewPost(false)
 }
 
 const viewPost = async (saveState = true) => {
-    // queryToData()
-    const response = await axios.get("http://localhost:3000/boards", {
+    const response = await axios.get("/boards", {
         params: {
             board: `${boardId.value}`,
             page: `${currentPageComponent.value.currentPage}`,
@@ -148,6 +137,7 @@ const viewPost = async (saveState = true) => {
             itemsPerPage: `${itemsPerPage.value}`
         }
     })
+    //예외처리, Response가 값이 이상하다면
 
     if (saveState) {
         let url = "boardView?currentPage=" + currentPageComponent.value.currentPage + "&board=" + boardId.value
@@ -173,7 +163,7 @@ const viewPost = async (saveState = true) => {
         today.day === postDate.day
         ? postDate.toLocaleString(DateTime.TIME_24_SIMPLE)
         : postDate.toISODate();
-//이 아랫부분 나중에 다시 공부하기
+        
         return {
             ...data,
             formattedDate,
@@ -181,10 +171,10 @@ const viewPost = async (saveState = true) => {
     });
 }
 
-// watch(() => route.params, async () => {
-//     viewPost()
-// });
-
+const getActiveClass = (board) => { 
+    console.log(board)
+    return board === boardId.value ? $style.active : ''
+}
 
 const doSearch = (searchKeyword, opt) => {
     currentPageComponent.value.resetPage()
@@ -204,8 +194,9 @@ const resetCurrentPage = () => {
 
 <style lang="scss" module>
 .content {
-    width: 1024px;
-    margin: 0 auto;
+    min-height: 800px;
+    margin-block: 5px;
+
     a {
         text-decoration: none;
         color: black;
@@ -217,16 +208,39 @@ const resetCurrentPage = () => {
     .boardCategory {
         display: flex;
         justify-content: space-evenly;
+        align-items: center;
+        margin-bottom: -1px;
 
         .boardName {
-            border: 1px solid blue;
+            width: 100px;
+            height: 40px;
+
+            color: grey;
+            font-size: 18px;
+            text-align: center;
+            line-height: 40px;
+
+            z-index: 1;
+            position: relative;
+
+            &.active {
+                color: black;
+                font-weight: bold;
+                border: 1px solid #c6c6c6;
+                border-bottom: 1px solid white;
+            }
         }
     }
     .postTable{
-        width: 800px;
-        margin: 0 auto;
-        border: 1px solid green;
+        width: 1100px;
+
+        border-block: 1px solid #c6c6c6;
         border-collapse: collapse;
+
+        margin-inline: auto;
+
+        position: relative;
+        z-index: 0;
 
         th {
             text-align: center;
@@ -234,7 +248,6 @@ const resetCurrentPage = () => {
 
         .id {
             width: 80px;
-            
         }
         .board {
             width: 80px;
@@ -250,13 +263,48 @@ const resetCurrentPage = () => {
         }
 
         td {
-            border: 1px solid red;
+            border-top: 1px solid #c6c6c6;
             text-align: center;
         }
 
         .tdTitle {
             text-align: left;
             padding-left: 5px;
+        }
+    }
+
+    .utility {
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .postNumber {
+            width: 120px;
+
+            .itemsPerPage {
+                border: 1px solid #c6c6c6;
+            }
+        }
+
+        .writeBox {
+            width: 120px;
+            // padding-right: 0px;
+            // padding-left: auto;
+        }
+        .writeBtn {
+            width: 60px;
+            float: right;
+            text-align: center;
+            border: 1px solid #c6c6c6;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        .hide {
+            display: none;
         }
     }
 }

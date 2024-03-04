@@ -11,6 +11,7 @@
         </select>
 
         <input 
+            :class="$style.inputArea"
             v-model="keyword"
             type="text"
         />
@@ -50,10 +51,16 @@ const emit = defineEmits(['searchPost'])
     display: flex;
     justify-content: center;
 
-    margin-top: 10px;
+    .searchOpt {
+        border: 1px solid #c6c6c6;
+    }
+
+    .inputArea {
+        border: 1px solid #c6c6c6;
+    }
 
     .searchBtn {
-        border: 1px solid blue;
+        border: 1px solid #c6c6c6;
         margin-left: 5px;
     }
 }

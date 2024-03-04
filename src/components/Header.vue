@@ -1,7 +1,10 @@
 <template>
     <div :class="$style.index">
-		<div :class="$style.homeBtn">
-			<a href="/">게시판 홈</a>
+		<div 
+			:class="$style.homeBtn"
+			@click=" router.push('/')"
+		>
+			Home
 		</div>
 		<div 
 			v-if="loginStore.loginStatus === true"
@@ -70,41 +73,45 @@ a {
 	height: 52px;
 
 	display: flex;
+	align-items: center;
 
-	text-align: center;
-	line-height: 52px;
-
-	border-bottom: 1px solid red;
-	margin-bottom: 20px;
+	border-bottom: 1px solid #c6c6c6;
 
 	.homeBtn {
+		width: 60px;
+		height: 30px;
+
+		display: flex;
+		justify-content: center;
+
+		border: 1px solid #c6c6c6;
+
+		text-align: center;
+
 		margin-left: 5px;
 		margin-right: auto;
+		margin-block: auto;
+
+		&:hover {
+			cursor: pointer;
+		}
 	}
 
 	.userBox {
 		width: 200px;
+		height: 40px;
 
 		font-size: 20px;
 		font-weight: bold;
+		line-height: 40px;
+
+		border: 1px solid #c6c6c6;
 
 		margin-left: auto;
 		margin-right: 5px;
+		margin-block: auto;
 
 		.name {
-
-			&:hover {
-				cursor: pointer;
-			}
-		}
-
-		.logout {
-			width: 60px;
-
-			font-size: 14px;
-
-			border: 1px solid blue;
-
 			&:hover {
 				cursor: pointer;
 			}
