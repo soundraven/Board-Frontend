@@ -16,7 +16,7 @@
                 >
                     수정
                 </router-link>
-                <div 
+                <div
                     :class="$style.editPost" 
                     @click="deletePost"
                 >
@@ -71,7 +71,7 @@
                             :class="$style.cmtEditArea"
                             v-model="cmt.content"
                         ></textarea>
-                        <div 
+                        <div
                             :class="$style.submitCmtBtn"
                             @click="updateCmt(cmt.id, cmt.content)"
                         >
@@ -79,12 +79,11 @@
                         </div>
                     </div>
                 </div>
-                
                 <div :class="$style.cmtRight">
                     <div :class="$style.cmtFormattedDate">
                         {{ cmt.formattedDate }}
                         <div>
-                            <span 
+                            <span
                                 :class="$style.cmtDeleteBtn"
                                 v-if="loginStore.name === cmt.registered_by"
                                 @click="cmtEdit = true, cmtEditId = cmt.id"
@@ -99,13 +98,8 @@
                                 삭제
                             </span>
                         </div>
-                        
                     </div>
-                    <span :class="$style.cmtDelete">
-
-                    </span>
                 </div>
-                
             </div>
         </div>
         <div :class="$style.cmtWriteBox">
@@ -142,6 +136,7 @@ import { DateTime } from 'luxon';
 const loginStore = useLoginStore()
 const route = useRoute();
 const router = useRouter();
+const token = localStorage.getItem('token')
 const id = ref('')
 
 const detail = ref([])
@@ -174,7 +169,7 @@ const getDetail = async () => {
                 ...data,
                 formattedDate,
             };
-        });
+    });
 
     totalCommentsCount.value = response.data.totalCommentsCount
 }
@@ -196,19 +191,14 @@ const liked = async (status) => {
             userId: loginStore.id,
             likeDislike: status === 'like' ? true : false,
         })
-//likeup likedn 이런걸 굳이 문자로 하지 말고 타입으로 나눠서 관리?
         if (response?.data === 'likeUp') {
             detail.value.like_count++
-            // alert("추천되었습니다.")
         } else if (response?.data === 'likeDn') {
             detail.value.like_count--
-            // alert("추천이 취소되었습니다.")
         } else if (response?.data === 'dislikeUp') {
             detail.value.dislike_count++
-            // alert("비추천되었습니다.")
         } else if (response?.data === 'dislikeDn') {
             detail.value.dislike_count--
-            // alert("비추천이 취소되었습니다.")
         } else { 
             alert("추천/비추천 값에 문제가 생겼습니다.")
         }
@@ -261,6 +251,11 @@ const deleteCmt = async (cmtId) => {
     try { 
         const response = await axios.post("/deleteCmt", {
             cmtId: cmtId,
+            registeredBy: loginStore.id,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
         if (response.status === 200) {
@@ -279,7 +274,12 @@ const updateCmt = async (cmtId, editedCmt) => {
     try { 
         const response = await axios.post("/updateCmt", {
             cmtId: cmtId,
-            editedCmt: editedCmt
+            editedCmt: editedCmt,
+            registeredBy: loginStore.id,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
         if (response.status === 200) {
@@ -320,6 +320,7 @@ const checkLogin = () => {
         border-top: 2px solid #c6c6c6;
 
         margin-top: 10px;
+        padding-inline: 5px;
 
         .titleBox {
             display: flex;
@@ -359,6 +360,7 @@ const checkLogin = () => {
         }
             
     }
+
     .infoRow {
         height: 30px;
 
@@ -369,6 +371,8 @@ const checkLogin = () => {
         font-size: 14px;
 
         border-block: 1px solid #c6c6c6;
+
+        padding-inline: 5px;
 
         .postInfo {
             display: flex;
@@ -414,7 +418,7 @@ const checkLogin = () => {
         border-bottom: 2px solid #c6c6c6;
         padding: 5px 10px;
     }
-    
+
     .cmtBox {
         display: flex;
         flex-direction: column;
@@ -422,8 +426,8 @@ const checkLogin = () => {
         .cmt {
             display: flex;
             justify-content: space-around;
-            padding: 10px;
             border-bottom: 1px solid #c6c6c6;
+            padding-block: 10px;
 
             .cmtRegisteredBy {
                 flex-basis: 15%;
@@ -440,18 +444,18 @@ const checkLogin = () => {
                     }
 
                     .submitCmtBtn {
-                width: 36px;
-                height: 20px;
-                font-size: 13px;
-                border: 1px solid #c6c6c6;
-                margin: 0 10px 10px 5px;
+                        width: 36px;
+                        height: 20px;
+                        font-size: 13px;
+                        border: 1px solid #c6c6c6;
+                        margin: 0 10px 10px 5px;
 
-                text-align: center;
+                        text-align: center;
 
-                &:hover {
-                    cursor: pointer;
-                }
-            }
+                        &:hover {
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
 

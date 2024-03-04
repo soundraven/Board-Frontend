@@ -1,8 +1,6 @@
 <template>
-    <Header />
-    <h1>마이페이지</h1>
-    <div>
-        <h1>계정 정보</h1>
+    <div :class="$style.index">
+        <div>계정 정보</div>
         <div>로그인 아이디: {{ loginStore.name }}</div>
         <div>이메일: 
             <input 
@@ -11,8 +9,6 @@
                 placeholder="이메일을 입력해주세요.">
         </div>
     </div>
-    <br>
-    <br>
     <div>
         <h1>프로필 정보</h1>
         <div>닉네임: 
@@ -22,10 +18,7 @@
                 placeholder="닉네임을 입력해주세요.">
         </div>
     </div>
-    <br>
-    <br>
     <button @click="update">수정 완료</button>
-
     <div>
         <h1>내 글 목록</h1>
         <table>
@@ -49,7 +42,6 @@
                 <td>{{ new Date(post.registered_date * 1000).toLocaleString() }}</td>
             </tr>
         </table>
-
         <div :class="$style.pagenation">
             <a v-for="(page, index) in totalPages"
                 :key="'page_' + index"
@@ -58,7 +50,6 @@
             >
                 {{ page }}
             </a>
-
         </div>
     </div>
 </template>
@@ -68,8 +59,6 @@ import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router';
 import axios from '../axios';
 import { useLoginStore } from '../stores/counter.js'
-import Header from '../components/Header.vue'
-import Footer from '../components/Footer.vue'
 
 const backEndUrl = import.meta.env.VITE_APP_API_URL
 
@@ -125,6 +114,10 @@ const update = async () => {
 </script>
 
 <style lang="scss" module>
+.index {
+    display: flex;
+    flex-direction: column;
+}
 .pagenation {
         display: flex;
         justify-content: center;

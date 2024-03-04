@@ -1,5 +1,24 @@
 <template>
     <div :class="$style.index">
+        <select v-model="boardName" :class="$style.boardSelect">
+            <option
+                v-for="(list, index) in boardList" 
+                :key="'list_' + index"
+                :value=list.id
+            >
+                {{ list.board_name }}
+            </option>
+        </select>
+        <input :class="$style.title"
+            type="text" 
+            v-model="title" 
+            placeholder="제목"
+        >
+        <textarea 
+            :class="$style.content"
+            v-model="content" 
+            placeholder="내용">
+        </textarea>
         <div 
             v-if="!edit"
             :class="$style.submit" 
@@ -14,56 +33,26 @@
         >
             수정
         </div>
-        <select v-model="boardName" :class="$style.boardSelect">
-            <option
-                v-for="(list, index) in boardList" 
-                :key="'list_' + index"
-                :value=list.id
-            >
-                {{ list.board_name }}
-            </option>
-        </select>
-        <div :class="$style.titleRow">
-            <div :class="$style.titleBox">
-                <!-- <div :class="$style.boardName">{{ detail.board_name }}</div> -->
-                <input :class="$style.title"
-                    type="text" 
-                    v-model="title" 
-                    placeholder="제목"
-                >
-            </div>
-        </div>
-        <div :class="$style.infoRow">
-            <input 
-                :class="$style.registeredBy"
-                type="text" 
-                v-model="writer" 
-                placeholder="작성자"
-            >
-            <!-- <div>{{ detail.id }}</div> -->
-        </div>
-        <textarea 
-            :class="$style.content"
-            v-model="content" 
-            placeholder="내용">
-        </textarea>
     </div>
-        
+    
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import axios from "../axios"
+import { useLoginStore } from '../stores/counter';
 import { getBoardList } from './utils'
+import axios from "../axios"
 
 const route = useRoute();
 const router = useRouter();
+const token = localStorage.getItem('token')
+const loginStore = useLoginStore()
 
-const boardName = ref("")
+const boardName = ref("1")
 const title = ref("")
 const content = ref("")
-const writer = ref("")
+const registeredBy = ref("")
 
 const boardList = ref([])
 
@@ -71,19 +60,24 @@ const edit = ref(false)
 
 onMounted(async () => { 
     boardList.value = await getBoardList()
-//로그인한 사람과 수정하려는 사람이 동일한지 체크 필요
-    if (route.query.id !== undefined && route.query.id !== "") { 
+    if (route.query.id !== undefined && route.query.id !== "") {
         edit.value = true
+
         const response = await axios.get("/detail", {
             params: { id: route.query.id }
         })
-
         const detail = response.data.datas
+
+        if (detail.registered_by !== loginStore.id) {
+            return
+        }
 
         boardName.value = detail.board_id
         title.value = detail.title
         content.value = detail.content
-        writer.value = detail.registered_by
+        registeredBy.value = detail.registered_by
+    } else { 
+        registeredBy.value = loginStore.id
     }
 })
 
@@ -93,11 +87,16 @@ const submit = async () => {
             board_name: boardName.value,
             title: title.value,
             content: content.value,
-            registered_by: writer.value,
+            registered_by: registeredBy.value,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
         if (response.status === 200) {
             alert("글이 등록되었습니다.");
+            router.push('/boardView')
         } else {
             alert(`오류가 발생했습니다: ${response.statusText}`);
         }
@@ -108,13 +107,17 @@ const submit = async () => {
 }
 
 const update = async () => { 
-    try { 
+    try {
         const response = await axios.post("/postUpdate", {
             board_name: boardName.value,
             title: title.value,
             content: content.value,
-            // registered_by: writer.value,
+            registered_by: registeredBy.value,
             id: route.query.id,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
         if (response.status === 200) {
@@ -128,64 +131,81 @@ const update = async () => {
         alert(`오류가 발생했습니다: ${error.message}`)
     }
 }
-
-const deletePost = async () => { 
-    try { 
-        const response = await axios.post("/postDelete", {
-            id: route.query.id,
-        })
-
-        if (response.status === 200) {
-            alert("글이 삭제되었습니다.");
-            router.push({ name: 'boardView' })
-        } else {
-            alert(`try문에서의 오류: ${response.statusText}`);
-        }
-    } catch (error) { 
-        console.error(error)
-        alert(`오류가 발생했습니다: ${error.message}`)
-    }
-}
 </script>
 
 <style lang="scss" module>
-
-
 .index {
-    width: 1000px;
-    border: 1px solid black;
-    margin-inline: auto;
+    width: 1100px;
+    min-height: 700px;
+    border-block: 2px solid #c6c6c6;
+
+
+    .submit {
+        width: 40px;
+    }
 
     .boardSelect {
-        width: 100px;
-    }
+        width: 100%;
+        height: 30px;
 
-    .titleRow {
-        display: flex;
-        justify-content: space-between;
-        border: 1px solid green;
-        padding: 5px 10px;
-        .titleBox {
-            display: flex;
+        border: 1px solid #c6c6c6;
+        border-radius: 2px;
+        
+        margin-top: 10px;
+        padding: 5px;
 
-            .title {
-                border: 1px solid red;
-                margin-inline: 5px;
-            }
+        &:focus {
+            border: 2px solid black;
+        }
+        &:select {
+            background-color: blue;
         }
     }
-    .infoRow {
-        display: flex;
-        justify-content: space-between;
-        padding: 5px 10px;
-        border: 1px solid orange;
+
+    .title {
+        width: 100%;
+        height: 30px;
+
+        font-weight: bold;
+
+        margin-top: 10px;
+        padding-left: 5px;
+
+        border: 1px solid #c6c6c6;
+        border-radius: 2px;
+
+        &:focus {
+            border: 2px solid black;
+        }
     }
 
     .content {
         width: 100%;
-        padding: 10px;
-        min-height: 360px;
-        border: 1px solid blue;
+        min-height: 600px;
+
+        border: 1px solid #c6c6c6;
+        border-radius: 2px;
+
+        padding: 5px;
+        margin-top: 10px;
+    }
+
+    .submit {
+        width: 40px;
+        height: 23px;
+
+        font-size: 16px;
+        text-align: center;
+        line-height: 23px;
+
+        border: 1px solid #c6c6c6;
+
+        margin-inline: auto 5px;
+        margin-block: 10px;
+
+        &:hover {
+            cursor: pointer;
+        }
     }
 }
 </style>
