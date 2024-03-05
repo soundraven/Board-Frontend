@@ -31,14 +31,18 @@ const closePopover = () => {
 
 <style lang="scss" module>
 .popover {
-    display: table;
     width: 150px;
+
+    display: table;
+
     position: absolute;
+
     background-color: white;
-    border: 1px solid blue;
+
+    border: 1px solid #c6c6c6;
     border-collapse: collapse;
 
-    z-index: 1000;
+    z-index: 0;
 
     .menu {
         display: block;

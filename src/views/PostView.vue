@@ -7,7 +7,7 @@
             </div>
             <div
                 :class="$style.editBox"
-                v-if="loginStore.name === detail.registered_by"
+                v-if="loginStore.id === detail.registered_by"
             >
                 <router-link 
                     :to="{ name: 'boardWrite', query: { id } }"
@@ -231,6 +231,10 @@ const submitCmt = async () => {
             postId: id.value,
             registeredBy: loginStore.id,
             cmt: commentContent.value,
+        }, {
+            headers: {
+                "authentification": token
+            },
         })
 
         if (response.status === 200) { 

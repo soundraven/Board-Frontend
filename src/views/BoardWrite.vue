@@ -58,7 +58,7 @@ const boardList = ref([])
 
 const edit = ref(false)
 
-onMounted(async () => { 
+onMounted( async () => { 
     boardList.value = await getBoardList()
     if (route.query.id !== undefined && route.query.id !== "") {
         edit.value = true
@@ -76,6 +76,7 @@ onMounted(async () => {
         title.value = detail.title
         content.value = detail.content
         registeredBy.value = detail.registered_by
+        console.log(detail)
     } else { 
         registeredBy.value = loginStore.id
     }
