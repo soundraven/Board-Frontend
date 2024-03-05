@@ -76,7 +76,6 @@
 </template>
 
 <script setup>
-// asyncData 처럼 mounted 전에 데이터를 불러와서 처음에 페이지에 도달했을 때부터 글 목록이 보이게
 import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useLoginStore } from '../stores/counter';
