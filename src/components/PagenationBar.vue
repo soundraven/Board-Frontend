@@ -36,7 +36,6 @@ const currentPage = ref(0)
 
 const pageGroup = computed(() => { 
     let startPage, endPage
-
     if (props.totalPages < 10) {
         startPage = 1;
         endPage = props.totalPages;
@@ -79,45 +78,13 @@ defineExpose({ currentPage, resetPage })
 </script>
 
 <style lang="scss" module>
-// .pagenation {
-//         display: flex;
-//         justify-content: center;
-
-//         .pageBtn{
-//             width: 25px;
-//             height: 25px;
-
-//             text-align: center;
-//             vertical-align: middle;
-
-//             // border: 1px solid red;
-//             border-top: 1px solid red;
-//             border-bottom: 1px solid red;
-
-//             &:first-child {
-//                 border-left: 1px solid red;
-//             }
-//             &:last-child {
-//                 border-right: 1px solid red;
-//             }
-
-//             &:hover {
-//                 cursor: pointer;
-//             }
-
-//             &.active {
-//                 background-color: aqua;
-//             }
-//         }
-//     }
 .pagenation {
     display: table;
+    border-collapse: collapse;
     margin-inline: auto;
     margin-top: 10px;
 
-    border-collapse: collapse;
-
-    .pageBtn{
+    .pageBtn {
         display: table-cell;
 
         width: 25px;

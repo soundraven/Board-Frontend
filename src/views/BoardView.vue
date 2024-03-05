@@ -9,8 +9,8 @@
                     boardId = list.board_id 
                     keyword = ''
                     resetCurrentPage()
-                    pushWithQuery()
                     propClearSearchBar()
+                    viewPost()
                 }"
             >
                 {{ list.board_name }}
@@ -40,7 +40,7 @@
         <PagenationBar 
             ref = "currentPageComponent"
             :totalPages="totalPages"
-            @movePage="pushWithQuery"
+            @movePage="viewPost"
         />
         <div :class="$style.utility">
             <div :class="$style.postNumber">
@@ -91,10 +91,6 @@ const route = useRoute();
 const router = useRouter()
 const loginStore = useLoginStore()
 const $style = useCssModule()
-
-function pushWithQuery() { 
-    viewPost()
-}
 
 const posts = ref([])
 const totalPages = ref(0)
@@ -172,7 +168,6 @@ const viewPost = async (saveState = true) => {
 }
 
 const getActiveClass = (board) => { 
-    console.log(board)
     return board === boardId.value ? $style.active : ''
 }
 
@@ -180,7 +175,7 @@ const doSearch = (searchKeyword, opt) => {
     currentPageComponent.value.resetPage()
     keyword.value = searchKeyword
     searchOpt.value = opt
-    pushWithQuery()
+    viewPost()
 }
 
 const propClearSearchBar = () => { 
@@ -289,9 +284,8 @@ const resetCurrentPage = () => {
 
         .writeBox {
             width: 120px;
-            // padding-right: 0px;
-            // padding-left: auto;
         }
+        
         .writeBtn {
             width: 60px;
             float: right;
