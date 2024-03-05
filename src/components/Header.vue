@@ -118,10 +118,8 @@ a {
 		}
 	}
 
-	
-
 	.needLogin {
-		
+
 		&:hover {
 			cursor: pointer;
 		}

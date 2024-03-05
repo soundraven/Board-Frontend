@@ -87,7 +87,7 @@ import { DateTime } from 'luxon';
 import SearchBar from '../components/SearchBar.vue'
 import PagenationBar from '../components/PagenationBar.vue'
 
-const route = useRoute();
+const route = useRoute()
 const router = useRouter()
 const loginStore = useLoginStore()
 const $style = useCssModule()
@@ -285,7 +285,7 @@ const resetCurrentPage = () => {
         .writeBox {
             width: 120px;
         }
-        
+
         .writeBtn {
             width: 60px;
             float: right;
