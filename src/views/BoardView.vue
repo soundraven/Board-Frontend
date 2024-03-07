@@ -76,6 +76,7 @@
 </template>
 
 <script setup>
+// asyncData 처럼 mounted 전에 데이터를 불러와서 처음에 페이지에 도달했을 때부터 글 목록이 보이게
 import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useLoginStore } from '../stores/counter';
@@ -147,26 +148,23 @@ const viewPost = async (saveState = true) => {
             }, "", url)
         }
 
-        if (response.status === 200) {
-            totalPages.value = response.data.totalPages
-            posts.value = response.data.datas.map((data) => {
-                const today = DateTime.now();
-                const postDate = DateTime.fromSeconds(data.registered_date);
+        if (response.status !== 200) return alert(`게시글 목록 로드 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        totalPages.value = response.data.totalPages
+        posts.value = response.data.datas.map((data) => {
+            const today = DateTime.now();
+            const postDate = DateTime.fromSeconds(data.registered_date);
 
-                const formattedDate = today.year === postDate.year &&
-                    today.month === postDate.month &&
-                    today.day === postDate.day
-                    ? postDate.toLocaleString(DateTime.TIME_24_SIMPLE)
-                    : postDate.toISODate();
+            const formattedDate = today.year === postDate.year &&
+                today.month === postDate.month &&
+                today.day === postDate.day
+                ? postDate.toLocaleString(DateTime.TIME_24_SIMPLE)
+                : postDate.toISODate();
 
-                return {
-                    ...data,
-                    formattedDate,
-                };
-            })
-        } else {
-            alert(`오류가 발생했습니다: ${response.statusText}`);
-        }
+            return {
+                ...data,
+                formattedDate,
+            };
+        })
     } catch (error) {
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)

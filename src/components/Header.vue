@@ -7,7 +7,7 @@
 			Home
 		</div>
 		<div 
-			v-if="loginStore.loginStatus === true"
+			v-if="loginStore.loginStatus"
 			:class="$style.userBox"
 		>
 			<span 

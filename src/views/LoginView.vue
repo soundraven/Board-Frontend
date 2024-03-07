@@ -64,14 +64,13 @@ const submit = async () => {
             id: id.value,
             pw: pw.value,
         });
-        
-        if (response.status === 200) {
-            const userInfo = response.data.userInfo
-                loginStore.login(userInfo)
-                localStorage.setItem('token', response.data.token)
-                router.push('/boardView');
-            alert("로그인이 성공했습니다.");
-        }
+
+        if (response.status !== 200) return alert(`로그인 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        const userInfo = response.data.userInfo
+        loginStore.login(userInfo)
+        localStorage.setItem('token', response.data.token)
+        router.push('/boardView');
+        alert("로그인이 성공했습니다.");
     } catch (error) { 
         alert(`오류가 발생했습니다: ${error.message}, ${error.response?.data.message}`)
     }

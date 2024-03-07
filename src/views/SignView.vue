@@ -72,16 +72,14 @@ const submit = async () => {
             alert("아이디와 비밀번호는 필수 요소입니다.")
             return
         }
+        
         const response = await axios.post("/signIn", {
             ...form.value
         })
 
-        if (response.status === 200) {
-            alert("회원 가입이 성공했습니다. 로그인 페이지로 이동합니다.");
-            router.push('/loginView');
-        } else {
-            alert(`오류가 발생했습니다: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`회원가입 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("회원 가입이 성공했습니다. 로그인 페이지로 이동합니다.");
+        router.push('/loginView');
     } catch (error) { 
         alert(`오류가 발생했습니다: ${error.message}, ${error.response.data.message}`)
     }
