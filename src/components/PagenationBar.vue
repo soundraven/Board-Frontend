@@ -34,23 +34,46 @@ const emits = defineEmits(['movePage']);
 
 const currentPage = ref(0)
 
-const pageGroup = computed(() => { 
+const pageGroup = computed(() => {
     let startPage, endPage
-    if (props.totalPages < 10) {
-        startPage = 1;
-        endPage = props.totalPages;
-    } else if (currentPage.value < 5) {
-        startPage = 1;
-        endPage = Math.min(10, props.totalPages);
-    } else if (props.totalPages - currentPage.value >= 7) {
-        startPage = Math.max(1, currentPage.value - 3);
-        endPage = Math.min(startPage + 9, props.totalPages);
-    } else if (props.totalPages - currentPage.value < 7) { 
-        startPage = Math.max(1, props.totalPages - 9);
-        endPage = Math.min(startPage + 9, props.totalPages);
+
+    // if (props.totalPages < 10) {
+    //     startPage = 1
+    //     endPage = props.totalPages
+    // } else if (currentPage.value < 5) {
+    //     startPage = 1
+    //     endPage = Math.min(10, props.totalPages)
+    // } else if (props.totalPages - currentPage.value >= 7) {
+    //     startPage = Math.max(1, currentPage.value - 3)
+    //     endPage = Math.min(startPage + 9, props.totalPages)
+    // } else if (props.totalPages - currentPage.value < 7) { 
+    //     startPage = Math.max(1, props.totalPages - 9)
+    //     endPage = Math.min(startPage + 9, props.totalPages)
+    // }
+
+    const initialMaxPages = 10
+    const createMoveBtn = 5
+    const reachedEndPage = 7
+    const rangeOfLeftPage = 3
+    const rangeOfPage = 9
+
+    if (props.totalPages < initialMaxPages) {
+        startPage = 1
+        endPage = props.totalPages
+    } else {
+        if (currentPage.value < createMoveBtn) {
+            startPage = 1
+            endPage = initialMaxPages
+        } else if (props.totalPages - currentPage.value >= reachedEndPage) {
+            startPage = currentPage.value - rangeOfLeftPage
+            endPage = startPage + rangeOfPage
+        } else {
+            startPage = props.totalPages - rangeOfPage
+            endPage = props.totalPages
+        }
     }
 
-    return Array.from(Array(endPage - startPage + 1), (_, i) => startPage + i)
+        return Array.from(Array(endPage - startPage + 1), (_, i) => startPage + i)
 })
 
 const movePageGroup = (direction) => { 
