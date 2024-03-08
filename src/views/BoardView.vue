@@ -5,13 +5,7 @@
                 v-for="(list, index) in boardList"
                 :key="'list_' + index"
                 :class="[$style.boardName, getActiveClass(list.board_id)]"
-                @click="() => { 
-                    boardId = list.board_id 
-                    keyword = ''
-                    resetCurrentPage()
-                    propClearSearchBar()
-                    viewPost()
-                }"
+                @click="clickBoardName(list.board_id)"
             >
                 {{ list.board_name }}
             </span>
@@ -81,7 +75,6 @@ import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useLoginStore } from '../stores/counter';
 import { getBoardList } from './utils';
-// import { searchOptList } from '@/stores/counter'
 import axios from "../axios"
 import { DateTime } from 'luxon';
 import SearchBar from '../components/SearchBar.vue'
@@ -124,6 +117,20 @@ const popStateHandler = (e) => {
 }
 
 const viewPost = async (saveState = true) => {
+    if (saveState) {
+        let url = "boardView?currentPage=" + currentPageComponent.value.currentPage + "&board=" + boardId.value
+
+        if (keyword.value !== '') {
+            url += "&search=" + keyword.value
+        }
+
+        window.history.pushState({
+            page: currentPageComponent.value.currentPage,
+            boardId: boardId.value,
+            search: keyword.value,
+        }, "", url)
+    }
+    
     try {
         const response = await axios.get("/boards", {
             params: {
@@ -134,20 +141,6 @@ const viewPost = async (saveState = true) => {
                 itemsPerPage: `${itemsPerPage.value}`
             }
         })
-
-        if (saveState) {
-            let url = "boardView?currentPage=" + currentPageComponent.value.currentPage + "&board=" + boardId.value
-
-            if (keyword.value !== '') {
-                url += "&search=" + keyword.value
-            }
-
-            window.history.pushState({
-                page: currentPageComponent.value.currentPage,
-                boardId: boardId.value,
-                search: keyword.value,
-            }, "", url)
-        }
 
         if (response.status !== 200) return alert(`게시글 목록 로드 시도 중 오류가 발생했습니다: ${response.statusText}`)
         totalPages.value = response.data.totalPages
@@ -170,6 +163,14 @@ const viewPost = async (saveState = true) => {
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)
     }
+}
+
+const clickBoardName = (clickedBoardId) => { 
+    boardId.value = clickedBoardId
+    keyword.value = ''
+    resetCurrentPage()
+    propClearSearchBar()
+    viewPost()
 }
 
 const getActiveClass = (board) => { 
