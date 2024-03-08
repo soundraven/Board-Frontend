@@ -12,7 +12,6 @@
                 <router-link 
                     :to="{ name: 'boardWrite', query: { id } }"
                     :class="$style.editPost"
-                    
                 >
                     수정
                 </router-link>
@@ -25,7 +24,7 @@
             </div>
         </div>
         <div :class="$style.infoRow">
-            <div :class="$style.registeredBy">작성자: {{ detail.registered_by }}</div>
+            <div :class="$style.registeredBy">작성자: {{ detail.name }}</div>
             <div :class="$style.postInfo">
                 <div :class="$style.likeCnt">추천: {{ detail.like_count }}</div>
                 <div :class="$style.dislikeCnt">비추천: {{ detail.dislike_count }}</div>
@@ -66,7 +65,7 @@
                     <span v-show="cmtEditId !== cmt.id">{{ cmt.content }}</span>
                     <div 
                         :class="$style.cmtEditBox"
-                        v-if="cmtEdit === true && cmtEditId === cmt.id">
+                        v-if="cmtEdit && cmtEditId === cmt.id">
                         <textarea 
                             :class="$style.cmtEditArea"
                             v-model="cmt.content"
@@ -155,6 +154,7 @@ const getDetail = async () => {
     })
 
     detail.value = response.data.datas
+
     if (detail.value.like_count === null) { 
         detail.value.like_count = 0
     }
@@ -163,24 +163,24 @@ const getDetail = async () => {
     }
 
     comments.value = response.data.commentsDatas.map((data) => {
-            const postDate = DateTime.fromMillis(data.registered_date * 1000);
-            const formattedDate = postDate.toFormat('yyyy-MM-dd HH:mm')
-            return {
-                ...data,
-                formattedDate,
-            };
-    });
+        const postDate = DateTime.fromMillis(data.registered_date * 1000)
+        const formattedDate = postDate.toFormat('yyyy-MM-dd HH:mm')
+        return {
+            ...data,
+            formattedDate,
+        }
+    })
 
     totalCommentsCount.value = response.data.totalCommentsCount
 }
 
 onMounted(() => { 
-    id.value = route.params.id;
+    id.value = route.params.id
     getDetail()
 })
 
 const liked = async (status) => {
-    if (loginStore.loginStatus !== true) { 
+    if (!loginStore.loginStatus) { 
         alert("로그인된 사용자만 사용할 수 있는 기능입니다.")
         return
     }
@@ -211,14 +211,15 @@ const deletePost = async () => {
     try { 
         const response = await axios.post("/postDelete", {
             id: id.value,
+        }, {
+            headers: {
+                "authentification": token
+            }
         })
 
-        if (response.status === 200) {
-            alert("글이 삭제되었습니다.");
-            router.push({ name: 'boardView' })
-        } else {
-            alert(`try문에서의 오류: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`글 삭제 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("글이 삭제되었습니다.")
+        router.push({ name: 'boardView' })
     } catch (error) { 
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)
@@ -237,18 +238,14 @@ const submitCmt = async () => {
             },
         })
 
-        if (response.status === 200) { 
-            alert("댓글이 등록되었습니다")
-        } else {
-            alert(`댓글 등록 과정에서 오류가 발생했습니다: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`댓글 등록 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("댓글이 등록되었습니다.")
+        getDetail()
+        commentContent.value = ""
     } catch (error) { 
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)
     }
-
-    getDetail()
-    commentContent.value = ""
 }
 
 const deleteCmt = async (cmtId) => { 
@@ -262,12 +259,9 @@ const deleteCmt = async (cmtId) => {
             }
         })
 
-        if (response.status === 200) {
-            alert("댓글이 삭제되었습니다.");
-            getDetail()
-        } else {
-            alert(`try문에서의 오류: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`댓글 삭제 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("댓글이 삭제되었습니다.")
+        getDetail()
     } catch (error) { 
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)
@@ -286,14 +280,11 @@ const updateCmt = async (cmtId, editedCmt) => {
             }
         })
 
-        if (response.status === 200) {
-            alert("댓글이 수정되었습니다.");
-            cmtEdit.value = false
-            cmtEditId.value = 0
-            getDetail()
-        } else {
-            alert(`try문에서의 오류: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`댓글 수정 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("댓글이 수정되었습니다.")
+        cmtEdit.value = false
+        cmtEditId.value = 0
+        getDetail()
     } catch (error) { 
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)

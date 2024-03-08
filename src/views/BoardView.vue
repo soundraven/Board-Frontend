@@ -5,13 +5,7 @@
                 v-for="(list, index) in boardList"
                 :key="'list_' + index"
                 :class="[$style.boardName, getActiveClass(list.board_id)]"
-                @click="() => { 
-                    boardId = list.board_id 
-                    keyword = ''
-                    resetCurrentPage()
-                    propClearSearchBar()
-                    viewPost()
-                }"
+                @click="clickBoardName(list.board_id)"
             >
                 {{ list.board_name }}
             </span>
@@ -76,6 +70,7 @@
 </template>
 
 <script setup>
+// asyncData 처럼 mounted 전에 데이터를 불러와서 처음에 페이지에 도달했을 때부터 글 목록이 보이게
 import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useLoginStore } from '../stores/counter';
@@ -101,7 +96,7 @@ const boardList = ref([])
 const boardId = ref('free')
 
 const keyword = ref('')
-const searchOpt = ref('제목')
+const searchOpt = ref('Opt0')
 const clearSearchBar = ref(null)
 
 onMounted(async () => { 
@@ -122,10 +117,24 @@ const popStateHandler = (e) => {
 }
 
 const viewPost = async (saveState = true) => {
+    if (saveState) {
+        let url = "boardView?currentPage=" + currentPageComponent.value.currentPage + "&board=" + boardId.value
+
+        if (keyword.value !== '') {
+            url += "&search=" + keyword.value
+        }
+
+        window.history.pushState({
+            page: currentPageComponent.value.currentPage,
+            boardId: boardId.value,
+            search: keyword.value,
+        }, "", url)
+    }
+    
     try {
         const response = await axios.get("/boards", {
             params: {
-                board: `${boardId.value}`,
+                boardName: `${boardId.value}`,
                 page: `${currentPageComponent.value.currentPage}`,
                 keyword: `${keyword.value}`,
                 searchOpt: `${searchOpt.value}`,
@@ -133,44 +142,35 @@ const viewPost = async (saveState = true) => {
             }
         })
 
-        if (saveState) {
-            let url = "boardView?currentPage=" + currentPageComponent.value.currentPage + "&board=" + boardId.value
+        if (response.status !== 200) return alert(`게시글 목록 로드 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        totalPages.value = response.data.totalPages
+        posts.value = response.data.datas.map((data) => {
+            const today = DateTime.now();
+            const postDate = DateTime.fromSeconds(data.registered_date);
 
-            if (keyword.value !== '') {
-                url += "&search=" + keyword.value
-            }
+            const formattedDate = today.year === postDate.year &&
+                today.month === postDate.month &&
+                today.day === postDate.day
+                ? postDate.toLocaleString(DateTime.TIME_24_SIMPLE)
+                : postDate.toISODate();
 
-            window.history.pushState({
-                page: currentPageComponent.value.currentPage,
-                boardId: boardId.value,
-                search: keyword.value,
-            }, "", url)
-        }
-
-        if (response.status === 200) {
-            totalPages.value = response.data.totalPages
-            posts.value = response.data.datas.map((data) => {
-                const today = DateTime.now();
-                const postDate = DateTime.fromSeconds(data.registered_date);
-
-                const formattedDate = today.year === postDate.year &&
-                    today.month === postDate.month &&
-                    today.day === postDate.day
-                    ? postDate.toLocaleString(DateTime.TIME_24_SIMPLE)
-                    : postDate.toISODate();
-
-                return {
-                    ...data,
-                    formattedDate,
-                };
-            })
-        } else {
-            alert(`오류가 발생했습니다: ${response.statusText}`);
-        }
+            return {
+                ...data,
+                formattedDate,
+            };
+        })
     } catch (error) {
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)
     }
+}
+
+const clickBoardName = (clickedBoardId) => { 
+    boardId.value = clickedBoardId
+    keyword.value = ''
+    resetCurrentPage()
+    propClearSearchBar()
+    viewPost()
 }
 
 const getActiveClass = (board) => { 

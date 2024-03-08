@@ -60,7 +60,7 @@ const edit = ref(false)
 
 onMounted( async () => { 
     boardList.value = await getBoardList()
-    if (route.query.id !== undefined && route.query.id !== "") {
+    if (route.query.id) {
         edit.value = true
 
         const response = await axios.get("/detail", {
@@ -76,7 +76,6 @@ onMounted( async () => {
         title.value = detail.title
         content.value = detail.content
         registeredBy.value = detail.registered_by
-        console.log(detail)
     } else { 
         registeredBy.value = loginStore.id
     }
@@ -84,23 +83,26 @@ onMounted( async () => {
 
 const submit = async () => {
     try {
+        if (!loginStore.loginStatus) {
+            alert("로그인 상태가 아닙니다. 로그인 페이지로 이동합니다.")
+            router.push('/loginView')
+            return
+        }
         const response = await axios.post("/post", {
-            board_name: boardName.value,
+            boardName: boardName.value,
             title: title.value,
             content: content.value,
-            registered_by: registeredBy.value,
+            registeredBy: registeredBy.value,
         }, {
             headers: {
                 "authentification": token
             }
         })
 
-        if (response.status === 200) {
-            alert("글이 등록되었습니다.");
-            router.push('/boardView')
-        } else {
-            alert(`오류가 발생했습니다: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`글 작성 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("글이 등록되었습니다.");
+        //추후 개선점: 자기가 작성한 게시판으로 이동하도록
+        router.push('/boardView')
     } catch (error) { 
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)
@@ -109,11 +111,16 @@ const submit = async () => {
 
 const update = async () => { 
     try {
+        if (!loginStore.loginStatus) {
+            alert("로그인 상태가 아닙니다. 로그인 페이지로 이동합니다.")
+            router.push('/loginView')
+            return
+        }
         const response = await axios.post("/postUpdate", {
-            board_name: boardName.value,
+            boardName: boardName.value,
             title: title.value,
             content: content.value,
-            registered_by: registeredBy.value,
+            registeredBy: registeredBy.value,
             id: route.query.id,
         }, {
             headers: {
@@ -121,12 +128,9 @@ const update = async () => {
             }
         })
 
-        if (response.status === 200) {
-            alert("글이 수정되었습니다.");
-            router.push({ name: 'PostView', params: { id: route.query.id } })
-        } else {
-            alert(`try문에서의 오류: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`글 수정 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("글이 수정되었습니다.");
+        router.push({ name: 'PostView', params: { id: route.query.id } })
     } catch (error) { 
         console.error(error)
         alert(`오류가 발생했습니다: ${error.message}`)

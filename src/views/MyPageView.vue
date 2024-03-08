@@ -119,10 +119,10 @@ const myPost = async () => {
                 page: currentPageComponent.value.currentPage,
             },
         });
-        if (response.status === 200) { 
-            postList.value = response.data.datas
-            totalPages.value = response.data.totalPages
-        }
+
+        if (response.status !== 200) return alert(`내가 쓴 글 목록 로드 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        postList.value = response.data.datas
+        totalPages.value = response.data.totalPages
     } catch (error) { 
         alert(`오류가 발생했습니다: ${error.message}, ${error.response.data.message}`)
     }
@@ -139,9 +139,10 @@ const update = async () => {
                 "authentification": token
             },
         });
-        if (response.status === 200) { 
-            alert(`${response.data.message}`)
-        }
+
+        if (response.status !== 200) return alert(`내 정보 업데이트 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("내 정보가 업데이트 되었습니다.")
+        closeModal()
     } catch (error) { 
         alert(`오류가 발생했습니다: ${error.message}, ${error.response.data.message}`)
     }
@@ -182,6 +183,7 @@ const update = async () => {
             position: absolute;
             left: 0;
             top: 0;
+            z-index: 2;
 
             background-color: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(1.5px);

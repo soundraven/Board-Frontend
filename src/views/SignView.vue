@@ -1,10 +1,10 @@
 <template>
     <div :class="$style.index">
         <div :class="$style.loginBox">
-            <div :class="$style.idPwWrap">
+            <div :class="$style.namePwWrap">
                 <div :class="$style.input">
                 <input 
-                    v-model="form.id"
+                    v-model="form.name"
                     type="text"
                     placeholder="아이디 입력(필수)"
                     required
@@ -59,7 +59,7 @@ import axios from '../axios';
 const router = useRouter()
 
 const form = ref({
-    id: null,
+    name: null,
     pw: null,
     email: null,
     nickname: null,
@@ -68,20 +68,18 @@ const form = ref({
 
 const submit = async () => { 
     try {
-        if (!form.value.id.trim() || !form.value.pw.trim()) { 
+        if (!form.value.name.trim() || !form.value.pw.trim()) { 
             alert("아이디와 비밀번호는 필수 요소입니다.")
             return
         }
+        
         const response = await axios.post("/signIn", {
             ...form.value
         })
 
-        if (response.status === 200) {
-            alert("회원 가입이 성공했습니다. 로그인 페이지로 이동합니다.");
-            router.push('/loginView');
-        } else {
-            alert(`오류가 발생했습니다: ${response.statusText}`);
-        }
+        if (response.status !== 200) return alert(`회원가입 시도 중 오류가 발생했습니다: ${response.statusText}`)
+        alert("회원 가입이 성공했습니다. 로그인 페이지로 이동합니다.");
+        router.push('/loginView');
     } catch (error) { 
         alert(`오류가 발생했습니다: ${error.message}, ${error.response.data.message}`)
     }
@@ -106,7 +104,7 @@ const submit = async () => {
         margin: 0 auto;
         padding: 35px 0px;
 
-        .idPwWrap {
+        .namePwWrap {
             padding: 0 0 20px 0;
 
             .input {

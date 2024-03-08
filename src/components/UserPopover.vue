@@ -42,7 +42,7 @@ const closePopover = () => {
     border: 1px solid #c6c6c6;
     border-collapse: collapse;
 
-    z-index: 0;
+    z-index: 1;
 
     .menu {
         display: block;

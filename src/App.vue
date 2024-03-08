@@ -36,11 +36,11 @@ onMounted(async () => {
 		if (response.status === 401) {
 			alert("올바르지 않은 사용자를 감지했습니다. 다시 로그인해 주시기 바랍니다.")
 			localStorage.removeItem("token")
-
-		} else if (response.status == 200) {
-			const userInfo = response.data.userInfo
-			loginStore.login(userInfo)
 		}
+
+		if (response.status !== 200) return alert(`로그인 시도 중 오류가 발생했습니다: ${response.statusText}`)
+		const userInfo = response.data.userInfo
+		loginStore.login(userInfo)
 	}
 })
 
