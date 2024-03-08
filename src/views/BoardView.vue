@@ -134,7 +134,7 @@ const viewPost = async (saveState = true) => {
     try {
         const response = await axios.get("/boards", {
             params: {
-                board: `${boardId.value}`,
+                boardName: `${boardId.value}`,
                 page: `${currentPageComponent.value.currentPage}`,
                 keyword: `${keyword.value}`,
                 searchOpt: `${searchOpt.value}`,

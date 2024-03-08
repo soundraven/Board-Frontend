@@ -89,10 +89,10 @@ const submit = async () => {
             return
         }
         const response = await axios.post("/post", {
-            board_name: boardName.value,
+            boardName: boardName.value,
             title: title.value,
             content: content.value,
-            registered_by: registeredBy.value,
+            registeredBy: registeredBy.value,
         }, {
             headers: {
                 "authentification": token
@@ -117,10 +117,10 @@ const update = async () => {
             return
         }
         const response = await axios.post("/postUpdate", {
-            board_name: boardName.value,
+            boardName: boardName.value,
             title: title.value,
             content: content.value,
-            registered_by: registeredBy.value,
+            registeredBy: registeredBy.value,
             id: route.query.id,
         }, {
             headers: {
