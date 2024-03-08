@@ -4,9 +4,9 @@
             <option
                 v-for="(list, index) in searchOptList" 
                 :key="'list_' + index"
-                :value=list
+                :value="list.code"
             >
-                {{ list }}
+                {{ list.value }}
             </option>
         </select>
 
@@ -28,12 +28,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import { searchOptList } from '@/stores/counter'
 
 const keyword = ref('')
-const searchOpt = ref('제목')
-const searchOptList = ['제목','제목+내용','작성자','댓글',]
+const searchOpt = ref('Opt0')
 
-const searchPost = () => { 
+const searchPost = () => {
     emit('searchPost', keyword.value, searchOpt.value)
 }
 

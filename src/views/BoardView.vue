@@ -81,6 +81,7 @@ import { ref, onMounted, onBeforeUnmount,useCssModule } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useLoginStore } from '../stores/counter';
 import { getBoardList } from './utils';
+// import { searchOptList } from '@/stores/counter'
 import axios from "../axios"
 import { DateTime } from 'luxon';
 import SearchBar from '../components/SearchBar.vue'
@@ -102,7 +103,7 @@ const boardList = ref([])
 const boardId = ref('free')
 
 const keyword = ref('')
-const searchOpt = ref('제목')
+const searchOpt = ref('Opt0')
 const clearSearchBar = ref(null)
 
 onMounted(async () => { 

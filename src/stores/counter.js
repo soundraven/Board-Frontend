@@ -8,7 +8,7 @@ export const useLoginStore = defineStore('login', () => {
 	const name = ref("")
 	const email = ref("")
 	const nickname = ref("")
-//스토어에 토큰값 넣어놓기
+
 	function login(userInfo) { 
 		loginStatus.value = true
 		id.value = userInfo.id
@@ -32,13 +32,21 @@ export const useLoginStore = defineStore('login', () => {
 	return { loginStatus, adminStatus, login, logout, id, name, email, nickname }
 })
 
-
-// export const useCounterStore = defineStore('counter', () => {
-// 	const count = ref(0)
-// 	const doubleCount = computed(() => count.value * 2)
-// 	function increment() {
-// 		count.value++
-// 	}
-
-// 	return { count, doubleCount, increment }
-// })
+export const searchOptList = [
+    {
+        code: 'Opt0',
+        value: '제목'
+    },
+    {
+        code: 'Opt1',
+        value: '제목+내용'
+    },
+    {
+        code: 'Opt2',
+        value: '작성자'
+    },
+    // {
+    //     code: 'Opt3',
+    //     value: '댓글'
+    // },
+]
