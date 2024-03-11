@@ -45,6 +45,7 @@
                 </div>
             </div>
         </div>
+        <div>총 게시글 수: {{ totalCount }}</div>
         <div :class="$style.postList">
             <table :class="$style.table">
                 <tr>
@@ -94,6 +95,7 @@ const token = localStorage.getItem('token')
 const currentPageComponent = ref(null)
 const postList = ref([])
 const totalPages = ref(0)
+const totalCount = ref(0)
 
 const showModal = ref(false)
 
@@ -123,6 +125,7 @@ const myPost = async () => {
         if (response.status !== 200) return alert(`내가 쓴 글 목록 로드 시도 중 오류가 발생했습니다: ${response.statusText}`)
         postList.value = response.data.datas
         totalPages.value = response.data.totalPages
+        totalCount.value = response.data.totalCount
     } catch (error) { 
         alert(`오류가 발생했습니다: ${error.message}, ${error.response.data.message}`)
     }
