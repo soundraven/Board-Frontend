@@ -42,7 +42,7 @@
                 <select 
                     :class="$style.itemsPerPage"
                     v-model="itemsPerPage" 
-                    @change="viewPost"
+                    @change="reloadList()"
                 >
                     <option
                         v-for="(number, index) in itemsPerPageList" 
@@ -170,6 +170,11 @@ const clickBoardName = (clickedBoardId) => {
     keyword.value = ''
     resetCurrentPage()
     propClearSearchBar()
+    viewPost()
+}
+
+const reloadList = () => { 
+    currentPageComponent.value.currentPage = 0
     viewPost()
 }
 
