@@ -1,10 +1,10 @@
 <template>
     <div :class="$style.index">
         <div :class="$style.loginBox">
-            <div :class="$style.idPwWrap">
-                <div :class="$style.idInput">
+            <div :class="$style.namePwWrap">
+                <div :class="$style.nameInput">
                 <input 
-                    v-model="id"
+                    v-model="name"
                     type="id"
                     placeholder="아이디 입력"
                     required
@@ -50,18 +50,18 @@ import axios from '../axios';
 const loginStore = useLoginStore()
 const router = useRouter()
 
-const id = ref(null)
+const name = ref(null)
 const pw = ref(null)
 
 const submit = async () => { 
     try {
-        if (!id.value?.trim() || !pw.value?.trim()) {
+        if (!name.value?.trim() || !pw.value?.trim()) {
             alert("아이디와 비밀번호는 필수 요소입니다.")
             return
         }
 
         const response = await axios.post("/login", {
-            id: id.value,
+            name: name.value,
             pw: pw.value,
         });
 
@@ -94,9 +94,9 @@ const submit = async () => {
 
         padding: 35px 0px;
 
-        .idPwWrap {
+        .namePwWrap {
 
-            .idInput {
+            .nameInput {
                 border-radius: 6px 6px 0 0;
                 position: relative;
                 z-index: 1;
@@ -111,7 +111,7 @@ const submit = async () => {
                 
                 margin-top: -1px;
             }
-            .idInput, .pwInput {
+            .nameInput, .pwInput {
                 width: 402px;
                 height: 48px;
 
